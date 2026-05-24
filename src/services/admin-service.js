@@ -2,9 +2,11 @@ const userRepository = require('../repositories/user-repository');
 const offreRepository = require('../repositories/offre-repository');
 const candidatRepository = require('../repositories/candidat-repository');
 const entrepriseRepository = require('../repositories/entreprise-repository');
+const Candidat = require('../models/Candidat');
+const User = require('../models/User');
 
 async function listUsers() {
-  return userRepository.listUsers();
+  return userRepository.findAll();
 }
 
 async function deleteUser(id) {
@@ -17,11 +19,12 @@ async function listOffres() {
 }
 
 async function listCandidats() {
-  return candidatRepository.listCandidats();
+  const candidats = await Candidat.find().populate('userId', 'nom prenom email telephone').lean();
+  return candidats;
 }
 
 async function listEntreprises() {
-  return entrepriseRepository.listEntreprises();
+  return entrepriseRepository.findAll();
 }
 
 async function deleteOffre(id) {
