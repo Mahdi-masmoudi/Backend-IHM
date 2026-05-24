@@ -33,4 +33,5 @@ process.on('SIGINT', () => shutdown('SIGINT'));
 
 start().catch((err) => {
   console.error('[server] failed to start', err);
-  process.exit(1)
+  process.exit(1);
+});

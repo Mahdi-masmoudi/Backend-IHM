@@ -9,7 +9,6 @@ const userSchema = new mongoose.Schema({
   role: { type: String, required: true, enum: ['SUPER_ADMIN', 'CANDIDAT', 'ENTREPRISE'] }
 }, { timestamps: true });
 
-userSchema.index({ email: 1 });
 userSchema.index({ role: 1 });
 
 module.exports = mongoose.model('User', userSchema);
