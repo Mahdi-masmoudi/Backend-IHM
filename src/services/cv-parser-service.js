@@ -341,39 +341,21 @@ async function parseCv(filePath) {
   const rawLangues = extractLanguages(text);
 
   const data = {
-    nom: nom || 'Gharbi',
-    prenom: prenom || 'Yassine',
-    email: extractEmail(text) || 'yassine.gharbi@gmail.com',
-    telephone: extractPhone(text) || '23456789',
-    adresse: extractAddress(text) || 'Les Berges du Lac, Tunis',
-    competences: rawCompetences.length > 0 ? rawCompetences : ['Angular', 'React', 'JavaScript', 'HTML/CSS', 'API REST', 'Node.js', 'Git'],
-    experience: extractExperienceYears(text) || 3,
-    niveauEtude: extractEducationLevel(text) || 'Ingénieur (Bac+5)',
-    langues: rawLangues.length > 0 ? rawLangues : ['Français', 'Anglais', 'Arabe'],
-    linkedin: extractLinkedin(text) || 'https://www.linkedin.com/in/yassine-gharbi',
-    github: extractGithub(text) || 'https://github.com/yassine-gharbi',
+    nom: nom || '',
+    prenom: prenom || '',
+    email: extractEmail(text) || '',
+    telephone: extractPhone(text) || '',
+    adresse: extractAddress(text) || '',
+    competences: rawCompetences,
+    experience: extractExperienceYears(text) || 0,
+    niveauEtude: extractEducationLevel(text) || '',
+    langues: rawLangues,
+    linkedin: extractLinkedin(text) || '',
+    github: extractGithub(text) || '',
     portfolio: extractPortfolio(text) || '',
-    experiences: [
-      {
-        period: '2024 - Présent',
-        description: 'Freelance | full-stack : Expérience sur des applications web sur mesure avec gestion de base de données, interfaces utilisateurs responsives, et mise en ligne sur des serveurs cloud (comme Vercel, Netlify).'
-      },
-      {
-        period: '2022 - 2024',
-        description: 'Développement Front-End de modules ERP cliniques : Conception et développement de modules ERP (gestion des patients, pharmacie, paramétrage). Collaboration avec l’équipe backend via API REST pour l’intégration et la synchronisation des données. Participation aux méthodologies Agile/Scrum (sprints, standups, revues). Technologies : Angular, React, JavaScript, HTML/CSS, API REST.'
-      },
-      {
-        period: '2021 - 2022',
-        description: 'Création de deux sites web professionnels : Site institutionnel pour deux sociétés avec espace de réclamation en ligne, système de newsletter, module RH pour la candidature et la gestion des offres d’emploi. Site e-commerce avancé (React) avec gestion complète des stocks, génération automatique des descriptions produits, et intégration d’IA pour estimer la probabilité d’achat.'
-      }
-    ],
-    formations: [
-      {
-        period: '2016 - 2021',
-        description: 'Diplôme d\'Ingénieur d\'État en Génie Logiciel - École Nationale Supérieure d\'Informatique'
-      }
-    ],
-    certifications: ['Certified Scrum Developer (CSD)', 'AWS Certified Cloud Practitioner']
+    experiences: extractExperiences(sections) || [],
+    formations: extractFormations(sections) || [],
+    certifications: extractCertifications(sections) || []
   };
 
   const scoreExtraction = calculateExtractionScore(data);

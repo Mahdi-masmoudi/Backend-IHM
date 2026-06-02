@@ -45,4 +45,21 @@ async function profile(req, res, next) {
   }
 }
 
-module.exports = { register, registerCandidat, registerEntreprise, login, profile };
+async function parseCv(req, res, next) {
+  try {
+    if (!req.file) {
+      throw new Error('Un fichier CV (PDF ou DOCX) est requis');
+    }
+    const path = require('path');
+    const cvParserService = require('../services/cv-parser-service');
+    
+    const filePath = path.resolve(req.file.path);
+    const result = await cvParserService.parseCv(filePath);
+
+    res.status(200).json(result);
+  } catch (error) {
+    next(error);
+  }
+}
+
+module.exports = { register, registerCandidat, registerEntreprise, login, profile, parseCv };

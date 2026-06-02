@@ -10,8 +10,11 @@ const {
 	entrepriseRegisterSchemaNoRole
 } = require('../dtos/auth-dto');
 
+const { cvAnalyseUpload } = require('../middlewares/upload');
+
 const router = express.Router();
 
+router.post('/parse-cv', cvAnalyseUpload.single('file'), authController.parseCv);
 router.post('/register', validateBody(registerSchema), authController.register);
 router.post('/register/candidat', validateBody(candidatRegisterSchemaNoRole), authController.registerCandidat);
 router.post('/register/entreprise', validateBody(entrepriseRegisterSchemaNoRole), authController.registerEntreprise);
