@@ -155,6 +155,8 @@ async function getCandidatStats(userId) {
   if (candidat?.langues && candidat.langues.length >= 1) completion += 10; 
   else suggestions.push({ field: 'langues', message: 'Renseignez au moins 1 langue parlée (+10% visibilité)', points: 10 });
 
+  completion = Math.min(completion, 100);
+
   // Détermination du niveau candidat
   let niveau = 'Débutant';
   if (completion <= 30) niveau = 'Débutant';

@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const pdfParse = require('pdf-parse');
+const { PDFParse } = require('pdf-parse');
 const mammoth = require('mammoth');
 
 /**
@@ -57,8 +57,13 @@ const SECTION_HEADERS = {
 
 async function extractTextFromPdf(filePath) {
   const dataBuffer = fs.readFileSync(filePath);
-  const data = await pdfParse(dataBuffer);
-  return data.text;
+  const parser = new PDFParse({ data: dataBuffer });
+  try {
+    const result = await parser.getText();
+    return result.text;
+  } finally {
+    await parser.destroy();
+  }
 }
 
 async function extractTextFromDocx(filePath) {
@@ -330,6 +335,11 @@ function calculateExtractionScore(data) {
   return score;
 }
 
+function cleanString(str) {
+  if (!str) return '';
+  return str.replace(/[\r\n\t]+/g, ' ').replace(/\s+/g, ' ').trim();
+}
+
 // ── Main parse function ─────────────────────────────────────────────
 
 async function parseCv(filePath) {
@@ -340,22 +350,39 @@ async function parseCv(filePath) {
   const rawCompetences = extractCompetences(text);
   const rawLangues = extractLanguages(text);
 
+  const rawPhone = extractPhone(text) || '';
+  // Clean telephone to keep only digits and common phone characters if a tab or weird spacing matched
+  let cleanPhone = cleanString(rawPhone);
+  if (cleanPhone.includes(' ')) {
+    // If it contains a space or tab separation, keep the first chunk if it looks like a phone number
+    const parts = cleanPhone.split(' ');
+    if (parts[0].length >= 8 && /^\+?\d+$/.test(parts[0])) {
+      cleanPhone = parts[0];
+    }
+  }
+
   const data = {
-    nom: nom || '',
-    prenom: prenom || '',
-    email: extractEmail(text) || '',
-    telephone: extractPhone(text) || '',
-    adresse: extractAddress(text) || '',
+    nom: cleanString(nom),
+    prenom: cleanString(prenom),
+    email: cleanString(extractEmail(text)),
+    telephone: cleanPhone,
+    adresse: cleanString(extractAddress(text)),
     competences: rawCompetences,
     experience: extractExperienceYears(text) || 0,
-    niveauEtude: extractEducationLevel(text) || '',
+    niveauEtude: cleanString(extractEducationLevel(text)),
     langues: rawLangues,
-    linkedin: extractLinkedin(text) || '',
-    github: extractGithub(text) || '',
-    portfolio: extractPortfolio(text) || '',
-    experiences: extractExperiences(sections) || [],
-    formations: extractFormations(sections) || [],
-    certifications: extractCertifications(sections) || []
+    linkedin: cleanString(extractLinkedin(text)),
+    github: cleanString(extractGithub(text)),
+    portfolio: cleanString(extractPortfolio(text)),
+    experiences: (extractExperiences(sections) || []).map(e => ({
+      period: cleanString(e.period),
+      description: cleanString(e.description)
+    })),
+    formations: (extractFormations(sections) || []).map(f => ({
+      period: cleanString(f.period),
+      description: cleanString(f.description)
+    })),
+    certifications: (extractCertifications(sections) || []).map(c => cleanString(c))
   };
 
   const scoreExtraction = calculateExtractionScore(data);
