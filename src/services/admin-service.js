@@ -2,6 +2,8 @@ const userRepository = require('../repositories/user-repository');
 const offreRepository = require('../repositories/offre-repository');
 const candidatRepository = require('../repositories/candidat-repository');
 const entrepriseRepository = require('../repositories/entreprise-repository');
+const Candidat = require('../models/Candidat');
+const User = require('../models/User');
 
 async function listUsers() {
   const User = require('../models/User');
@@ -21,7 +23,7 @@ async function listOffres() {
 async function listCandidats() {
   const User = require('../models/User');
   const Candidat = require('../models/Candidat');
-  
+
   const candidats = await Candidat.find().lean();
   const userIds = candidats.map(c => c.userId);
   const users = await User.find({ _id: { $in: userIds } }).lean();
@@ -29,7 +31,7 @@ async function listCandidats() {
   for (const u of users) {
     userMap[u._id.toString()] = u;
   }
-  
+
   return candidats.map(c => {
     const u = userMap[c.userId.toString()] || {};
     return {
@@ -46,7 +48,7 @@ async function listCandidats() {
 async function listEntreprises() {
   const User = require('../models/User');
   const Entreprise = require('../models/Entreprise');
-  
+
   const companies = await Entreprise.find().lean();
   const userIds = companies.map(c => c.userId);
   const users = await User.find({ _id: { $in: userIds } }).lean();
@@ -54,7 +56,7 @@ async function listEntreprises() {
   for (const u of users) {
     userMap[u._id.toString()] = u;
   }
-  
+
   return companies.map(c => {
     const u = userMap[c.userId.toString()] || {};
     return {
