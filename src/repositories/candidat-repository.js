@@ -2,8 +2,8 @@ const Candidat = require('../models/Candidat');
 const Cv = require('../models/Cv');
 const LettreMotivation = require('../models/LettreMotivation');
 
-async function createCandidat({ userId, adresse, dateNaissance, niveauEtude, experience }) {
-  return Candidat.create({ userId, adresse, dateNaissance, niveauEtude, experience });
+async function createCandidat(data) {
+  return Candidat.create(data);
 }
 
 async function getByUserId(userId) {

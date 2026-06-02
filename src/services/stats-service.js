@@ -107,27 +107,74 @@ async function getCandidatStats(userId) {
   let completion = 0;
   const suggestions = [];
 
-  if (user?.nom) completion += 10; else suggestions.push({ field: 'nom', message: 'Ajoutez votre nom', points: 10 });
-  if (user?.prenom) completion += 10; else suggestions.push({ field: 'prenom', message: 'Ajoutez votre prénom', points: 10 });
-  if (user?.email) completion += 10; else suggestions.push({ field: 'email', message: 'Ajoutez votre email', points: 10 });
-  if (user?.telephone) completion += 10; else suggestions.push({ field: 'telephone', message: 'Ajoutez votre téléphone', points: 10 });
-  if (candidat?.adresse) completion += 10; else suggestions.push({ field: 'adresse', message: 'Ajoutez votre adresse', points: 10 });
-  if (candidat?.dateNaissance) completion += 5; else suggestions.push({ field: 'dateNaissance', message: 'Ajoutez votre date de naissance', points: 5 });
-  if (candidat?.niveauEtude) completion += 10; else suggestions.push({ field: 'niveauEtude', message: 'Ajoutez votre niveau d\'étude', points: 10 });
-  if (candidat?.experience > 0) completion += 10; else suggestions.push({ field: 'experience', message: 'Ajoutez vos années d\'expérience', points: 10 });
-  if (totalCvs > 0) completion += 15; else suggestions.push({ field: 'cv', message: 'Uploadez votre CV pour +15%', points: 15 });
-  if (totalLettres > 0) completion += 10; else suggestions.push({ field: 'lettre', message: 'Ajoutez une lettre de motivation pour +10%', points: 10 });
+  // 1. Nom (5%)
+  if (user?.nom) completion += 5; 
+  else suggestions.push({ field: 'nom', message: 'Ajoutez votre nom', points: 5 });
+
+  // 2. Prénom (5%)
+  if (user?.prenom) completion += 5; 
+  else suggestions.push({ field: 'prenom', message: 'Ajoutez votre prénom', points: 5 });
+
+  // 3. Email (10%)
+  if (user?.email) completion += 10; 
+  else suggestions.push({ field: 'email', message: 'Ajoutez votre email', points: 10 });
+
+  // 4. Téléphone (10%)
+  if (user?.telephone) completion += 10; 
+  else suggestions.push({ field: 'telephone', message: 'Ajouter votre numéro de téléphone (+10% visibilité)', points: 10 });
+
+  // 5. Adresse (10%)
+  if (candidat?.adresse) completion += 10; 
+  else suggestions.push({ field: 'adresse', message: 'Ajouter votre adresse de résidence (+10% visibilité)', points: 10 });
+
+  // 6. Date de naissance (5%)
+  if (candidat?.dateNaissance) completion += 5; 
+  else suggestions.push({ field: 'dateNaissance', message: 'Saisir votre date de naissance (+5% visibilité)', points: 5 });
+
+  // 7. Niveau d'études (10%)
+  if (candidat?.niveauEtude) completion += 10; 
+  else suggestions.push({ field: 'niveauEtude', message: 'Indiquer votre niveau d\'études (+10% visibilité)', points: 10 });
+
+  // 8. Expérience (10%)
+  if (candidat?.experience !== undefined && candidat?.experience >= 0 && (candidat?.experience > 0 || candidat?.experience === 0)) {
+    // Si l'expérience est renseignée (même à 0), on valide le champ
+    completion += 10;
+  } else {
+    suggestions.push({ field: 'experience', message: 'Préciser vos années d\'expérience (+10% visibilité)', points: 10 });
+  }
+
+  // 9. CV (25%)
+  if (totalCvs > 0) completion += 25; 
+  else suggestions.push({ field: 'cv', message: 'Uploadez votre CV pour être visible des recruteurs (+25% visibilité)', points: 25 });
+
+  // 10. Compétences (min 3) (10%)
+  if (candidat?.competences && candidat.competences.length >= 3) completion += 10; 
+  else suggestions.push({ field: 'competences', message: 'Ajoutez au moins 3 compétences clés (+10% visibilité)', points: 10 });
+
+  // 11. Langues (min 1) (10%)
+  if (candidat?.langues && candidat.langues.length >= 1) completion += 10; 
+  else suggestions.push({ field: 'langues', message: 'Renseignez au moins 1 langue parlée (+10% visibilité)', points: 10 });
+
+  // Détermination du niveau candidat
+  let niveau = 'Débutant';
+  if (completion <= 30) niveau = 'Débutant';
+  else if (completion <= 55) niveau = 'Intermédiaire';
+  else if (completion <= 80) niveau = 'Avancé';
+  else if (completion <= 95) niveau = 'Expert';
+  else niveau = 'Superstar';
 
   return {
     totalCandidatures, enAttente, acceptees, rejetees, totalCvs, totalLettres,
-    recentCandidatures, profileCompletion: completion, suggestions
+    recentCandidatures, profileCompletion: completion, suggestions, niveau
   };
 }
 
 async function getEntrepriseStats(userId) {
-  const [totalOffres, offresActives] = await Promise.all([
+  const [totalOffres, offresActives, user, entreprise] = await Promise.all([
     Offre.countDocuments({ entrepriseId: userId }),
-    Offre.countDocuments({ entrepriseId: userId, statut: 'ACTIVE' })
+    Offre.countDocuments({ entrepriseId: userId, statut: 'ACTIVE' }),
+    User.findById(userId).lean(),
+    Entreprise.findOne({ userId }).lean()
   ]);
 
   const offres = await Offre.find({ entrepriseId: userId }).select('_id titre').lean();
@@ -172,7 +219,62 @@ async function getEntrepriseStats(userId) {
     count: g.count
   }));
 
-  return { totalOffres, offresActives, totalCandidatures, enAttente, acceptees, recentCandidatures, candidaturesByOffre };
+  // Calcul complétion profil Recruteur (Entreprise)
+  let completion = 0;
+  const suggestions = [];
+
+  // 1. Nom entreprise (20%)
+  if (entreprise?.nomEntreprise) completion += 20;
+  else suggestions.push({ field: 'nomEntreprise', message: 'Renseignez le nom de l\'entreprise', points: 20 });
+
+  // 2. Email professionnel (10%)
+  if (user?.email) completion += 10;
+  else suggestions.push({ field: 'email', message: 'Ajoutez votre adresse email professionnelle', points: 10 });
+
+  // 3. Logo (15%)
+  if (entreprise?.logo) completion += 15;
+  else suggestions.push({ field: 'logo', message: 'Téléversez le logo de votre entreprise (+15% visibilité)', points: 15 });
+
+  // 4. Description (25%)
+  if (entreprise?.description) {
+    if (entreprise.description.length >= 100) {
+      completion += 25;
+    } else {
+      completion += 10;
+      suggestions.push({ field: 'description', message: 'Allongez la description de votre entreprise à 100 caractères min pour +15%', points: 15 });
+    }
+  } else {
+    suggestions.push({ field: 'description', message: 'Ajoutez une description détaillée de votre entreprise (+25% visibilité)', points: 25 });
+  }
+
+  // 5. Adresse (15%)
+  if (entreprise?.adresseEntreprise) completion += 15;
+  else suggestions.push({ field: 'adresseEntreprise', message: 'Renseignez l\'adresse de l\'entreprise (+15% visibilité)', points: 15 });
+
+  // 6. Secteur d'activité (15%)
+  if (entreprise?.secteurActivite) completion += 15;
+  else suggestions.push({ field: 'secteurActivite', message: 'Indiquez le secteur d\'activité (+15% visibilité)', points: 15 });
+
+  // Détermination du niveau recruteur
+  let niveau = 'Nouveau Recruteur';
+  if (completion <= 35) niveau = 'Nouveau Recruteur';
+  else if (completion <= 60) niveau = 'Recruteur Actif';
+  else if (completion <= 80) niveau = 'Recruteur Certifié';
+  else if (completion <= 95) niveau = 'Expert Recruteur';
+  else niveau = 'Super Recruteur';
+
+  return { 
+    totalOffres, 
+    offresActives, 
+    totalCandidatures, 
+    enAttente, 
+    acceptees, 
+    recentCandidatures, 
+    candidaturesByOffre,
+    profileCompletion: completion,
+    suggestions,
+    niveau
+  };
 }
 
 module.exports = { getGlobalStats, getCandidatStats, getEntrepriseStats };

@@ -59,7 +59,7 @@ async function createOffre({ entrepriseId, payload }) {
 
 async function updateOffre({ entrepriseId, idOffre, payload }) {
   const offre = await getOffre(idOffre);
-  if (offre.entreprise_id !== entrepriseId) {
+  if (String(offre.entrepriseId) !== String(entrepriseId)) {
     throw new AppError(403, 'Access denied');
   }
 
@@ -69,7 +69,7 @@ async function updateOffre({ entrepriseId, idOffre, payload }) {
 
 async function deleteOffre({ entrepriseId, idOffre }) {
   const offre = await getOffre(idOffre);
-  if (offre.entreprise_id !== entrepriseId) {
+  if (String(offre.entrepriseId) !== String(entrepriseId)) {
     throw new AppError(403, 'Access denied');
   }
 

@@ -11,7 +11,8 @@ const candidatSchema = new mongoose.Schema({
   linkedin: { type: String, default: '' },
   github: { type: String, default: '' },
   portfolio: { type: String, default: '' },
-  photo: { type: String, default: '' }
+  photo: { type: String, default: '' },
+  experienceDescription: { type: String, default: '' }
 }, { timestamps: true });
 
 module.exports = mongoose.model('Candidat', candidatSchema);

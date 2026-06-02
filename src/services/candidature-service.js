@@ -10,39 +10,40 @@ async function applyCandidature({ candidatId, offreId, cvId, lettreId, commentai
     throw new AppError(404, 'Offre not found');
   }
 
-  const existing = await candidatureRepository.findByCandidatAndOffre(candidatId, offreId);
+  const existing = await candidatureRepository.findDuplicate(candidatId, offreId);
   if (existing) {
     throw new AppError(409, 'Candidature already exists for this offer');
   }
 
-  const cv = await cvRepository.findByIdForCandidat(cvId, candidatId);
-  if (!cv) {
-    throw new AppError(400, 'CV not found for this candidat');
+  if (cvId) {
+    const cv = await cvRepository.findById(cvId);
+    if (!cv || String(cv.candidatId) !== String(candidatId)) {
+      throw new AppError(400, 'CV not found for this candidat');
+    }
   }
 
-  const lettre = await lettreRepository.findByIdForCandidat(lettreId, candidatId);
-  if (!lettre) {
-    throw new AppError(400, 'Lettre de motivation not found for this candidat');
+  if (lettreId) {
+    const lettre = await lettreRepository.findById(lettreId);
+    if (!lettre || String(lettre.candidatId) !== String(candidatId)) {
+      throw new AppError(400, 'Lettre de motivation not found for this candidat');
+    }
   }
 
-  const datePostulation = new Date().toISOString();
-  const idCandidature = await candidatureRepository.createCandidature({
+  const result = await candidatureRepository.create({
     candidatId,
     offreId,
     cvId,
     lettreId,
-    datePostulation,
-    statut: 'EN_ATTENTE',
     commentaire
   });
 
   return {
-    idCandidature,
+    idCandidature: result._id,
     candidatId,
     offreId,
     cvId,
     lettreId,
-    datePostulation,
+    datePostulation: result.datePostulation,
     statut: 'EN_ATTENTE',
     commentaire: commentaire || null
   };
@@ -53,7 +54,7 @@ async function listByOffre({ entrepriseId, offreId }) {
   if (!offre) {
     throw new AppError(404, 'Offre not found');
   }
-  if (offre.entreprise_id !== entrepriseId) {
+  if (String(offre.entrepriseId) !== String(entrepriseId)) {
     throw new AppError(403, 'Access denied');
   }
 
@@ -74,12 +75,12 @@ async function updateStatus({ entrepriseId, idCandidature, statut }) {
     throw new AppError(404, 'Candidature not found');
   }
 
-  const offre = await offreRepository.findById(candidature.offre_id);
-  if (!offre || offre.entreprise_id !== entrepriseId) {
+  const offre = await offreRepository.findById(candidature.offreId);
+  if (!offre || String(offre.entrepriseId) !== String(entrepriseId)) {
     throw new AppError(403, 'Access denied');
   }
 
-  await candidatureRepository.updateStatus(idCandidature, statut);
+  await candidatureRepository.updateStatut(idCandidature, statut);
   return { ...candidature, statut };
 }
 

@@ -3,42 +3,48 @@ const { Roles } = require('../config/roles');
 
 const baseUserSchema = z.object({
   nom: z.string().min(1),
-  prenom: z.string().min(1),
+  prenom: z.string().optional().or(z.literal('')),
   email: z.string().email(),
   motDePasse: z.string().min(8),
-  telephone: z.string().min(6)
+  telephone: z.string().optional().or(z.literal(''))
 });
 
 const candidatRegisterSchema = baseUserSchema.extend({
   role: z.literal(Roles.CANDIDAT),
-  adresse: z.string().min(1),
-  dateNaissance: z.string().min(1),
-  niveauEtude: z.string().min(1),
-  experience: z.coerce.number().int().min(0)
+  adresse: z.string().optional().or(z.literal('')),
+  dateNaissance: z.string().optional().or(z.literal('')),
+  niveauEtude: z.string().optional().or(z.literal('')),
+  experience: z.coerce.number().int().min(0).optional().default(0),
+  competences: z.array(z.string()).optional(),
+  langues: z.array(z.string()).optional(),
+  experienceDescription: z.string().optional().or(z.literal(''))
 });
 
 const entrepriseRegisterSchema = baseUserSchema.extend({
   role: z.literal(Roles.ENTREPRISE),
   nomEntreprise: z.string().min(1),
-  adresseEntreprise: z.string().min(1),
-  secteurActivite: z.string().min(1),
-  description: z.string().min(1),
-  logo: z.string().min(1).optional()
+  adresseEntreprise: z.string().optional().or(z.literal('')),
+  secteurActivite: z.string().optional().or(z.literal('')),
+  description: z.string().optional().or(z.literal('')),
+  logo: z.string().optional().or(z.literal(''))
 });
 
 const candidatRegisterSchemaNoRole = baseUserSchema.extend({
-  adresse: z.string().min(1),
-  dateNaissance: z.string().min(1),
-  niveauEtude: z.string().min(1),
-  experience: z.coerce.number().int().min(0)
+  adresse: z.string().optional().or(z.literal('')),
+  dateNaissance: z.string().optional().or(z.literal('')),
+  niveauEtude: z.string().optional().or(z.literal('')),
+  experience: z.coerce.number().int().min(0).optional().default(0),
+  competences: z.array(z.string()).optional(),
+  langues: z.array(z.string()).optional(),
+  experienceDescription: z.string().optional().or(z.literal(''))
 });
 
 const entrepriseRegisterSchemaNoRole = baseUserSchema.extend({
   nomEntreprise: z.string().min(1),
-  adresseEntreprise: z.string().min(1),
-  secteurActivite: z.string().min(1),
-  description: z.string().min(1),
-  logo: z.string().min(1).optional()
+  adresseEntreprise: z.string().optional().or(z.literal('')),
+  secteurActivite: z.string().optional().or(z.literal('')),
+  description: z.string().optional().or(z.literal('')),
+  logo: z.string().optional().or(z.literal(''))
 });
 
 const registerSchema = z.discriminatedUnion('role', [candidatRegisterSchema, entrepriseRegisterSchema]);

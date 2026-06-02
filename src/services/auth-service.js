@@ -54,21 +54,24 @@ async function registerWithRole(payload, role) {
 
   try {
     const userId = await userRepository.createUser({
-      nom: payload.nom,
-      prenom: payload.prenom,
+      nom: role === Roles.ENTREPRISE ? payload.nomEntreprise : (payload.nom || ''),
+      prenom: payload.prenom || '',
       email: payload.email,
       motDePasse: passwordHash,
-      telephone: payload.telephone,
+      telephone: payload.telephone || '',
       role
     });
 
     if (role === Roles.CANDIDAT) {
       await candidatRepository.createCandidat({
         userId,
-        adresse: payload.adresse,
-        dateNaissance: payload.dateNaissance,
-        niveauEtude: payload.niveauEtude,
-        experience: payload.experience
+        adresse: payload.adresse || '',
+        dateNaissance: payload.dateNaissance || '',
+        niveauEtude: payload.niveauEtude || '',
+        experience: payload.experience || 0,
+        competences: payload.competences || [],
+        langues: payload.langues || [],
+        experienceDescription: payload.experienceDescription || ''
       });
     }
 
@@ -76,10 +79,10 @@ async function registerWithRole(payload, role) {
       await entrepriseRepository.createEntreprise({
         userId,
         nomEntreprise: payload.nomEntreprise,
-        adresseEntreprise: payload.adresseEntreprise,
-        secteurActivite: payload.secteurActivite,
-        description: payload.description,
-        logo: payload.logo || null
+        adresseEntreprise: payload.adresseEntreprise || '',
+        secteurActivite: payload.secteurActivite || '',
+        description: payload.description || '',
+        logo: payload.logo || ''
       });
     }
 

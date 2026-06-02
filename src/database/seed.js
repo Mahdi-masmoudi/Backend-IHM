@@ -32,17 +32,17 @@ async function seedSuperAdmin() {
 }
 
 async function seedDemoData() {
-  const existingCandidat = await User.findOne({ email: 'ahmed.benali@email.com' });
+  const existingCandidat = await User.findOne({ email: 'ahmed.gharbi@email.com' });
   if (existingCandidat) return;
 
   const hash = await bcrypt.hash('Password123!', 10);
 
   // ── Entreprises ──────────────────────────────────────────────────
   const entreprisesData = [
-    { nom: 'Dupont', prenom: 'Marie', email: 'marie.dupont@techcorp.ma', telephone: '0612345678', nomEntreprise: 'TechCorp Maroc', adresse: 'Casablanca, Bd Zerktouni', secteur: 'Technologies', description: 'Leader en solutions digitales et transformation numérique au Maroc. Expertise en développement web, mobile et cloud.' },
-    { nom: 'Alami', prenom: 'Hassan', email: 'hassan@innov-rh.ma', telephone: '0623456789', nomEntreprise: 'InnovRH Solutions', adresse: 'Rabat, Agdal', secteur: 'Ressources Humaines', description: 'Cabinet de conseil en ressources humaines, spécialisé dans le recrutement et la gestion des talents.' },
-    { nom: 'Martin', prenom: 'Sophie', email: 'sophie@datawave.ma', telephone: '0634567890', nomEntreprise: 'DataWave Analytics', adresse: 'Tanger, Zone Franche', secteur: 'Data & Analytics', description: 'Société spécialisée en big data, intelligence artificielle et business intelligence.' },
-    { nom: 'El Fassi', prenom: 'Karim', email: 'karim@greenergy.ma', telephone: '0645678901', nomEntreprise: 'GreenErgy Solutions', adresse: 'Marrakech, Guéliz', secteur: 'Énergie Renouvelable', description: 'Solutions énergétiques durables et projets solaires pour entreprises et collectivités.' }
+    { nom: 'Dupont', prenom: 'Marie', email: 'marie.dupont@techcorp.tn', telephone: '22123456', nomEntreprise: 'TechCorp Tunisie', adresse: 'Tunis, Les Berges du Lac', secteur: 'Technologies', description: 'Leader en solutions digitales et transformation numérique en Tunisie. Expertise en développement web, mobile et cloud.' },
+    { nom: 'Alami', prenom: 'Hassan', email: 'hassan@innov-rh.tn', telephone: '23234567', nomEntreprise: 'InnovRH Solutions', adresse: 'Sfax, Route de Teniour', secteur: 'Ressources Humaines', description: 'Cabinet de conseil en ressources humaines, spécialisé dans le recrutement et la gestion des talents en Tunisie.' },
+    { nom: 'Martin', prenom: 'Sophie', email: 'sophie@datawave.tn', telephone: '24345678', nomEntreprise: 'DataWave Analytics', adresse: 'Ariana, El Ghazela', secteur: 'Data & Analytics', description: 'Société tunisienne spécialisée en big data, intelligence artificielle et business intelligence.' },
+    { nom: 'El Fassi', prenom: 'Karim', email: 'karim@greenergy.tn', telephone: '25456789', nomEntreprise: 'GreenErgy Solutions', adresse: 'Sousse, Sousse Ville', secteur: 'Énergie Renouvelable', description: 'Solutions énergétiques durables et projets solaires en Tunisie pour entreprises et collectivités.' }
   ];
 
   const entreprisesMap = {};
@@ -54,10 +54,10 @@ async function seedDemoData() {
 
   // ── Candidats ────────────────────────────────────────────────────
   const candidatsData = [
-    { nom: 'Benali', prenom: 'Ahmed', email: 'ahmed.benali@email.com', telephone: '0656789012', adresse: 'Casablanca, Maarif', dateNaissance: '1995-03-15', niveauEtude: 'Master (Bac+5)', experience: 3 },
-    { nom: 'Zahra', prenom: 'Fatima', email: 'fatima.zahra@email.com', telephone: '0667890123', adresse: 'Rabat, Hassan', dateNaissance: '1997-07-22', niveauEtude: 'Ingénieur (Bac+5)', experience: 2 },
-    { nom: 'Idrissi', prenom: 'Youssef', email: 'youssef.idrissi@email.com', telephone: '0678901234', adresse: 'Fès, Ville Nouvelle', dateNaissance: '1993-11-08', niveauEtude: 'Licence (Bac+3)', experience: 5 },
-    { nom: 'Tazi', prenom: 'Sara', email: 'sara.tazi@email.com', telephone: '0689012345', adresse: 'Tanger, Centre', dateNaissance: '1998-01-30', niveauEtude: 'Bac+2', experience: 1 }
+    { nom: 'Gharbi', prenom: 'Ahmed', email: 'ahmed.gharbi@email.com', telephone: '23456789', adresse: 'Tunis, Les Berges du Lac', dateNaissance: '1995-03-15', niveauEtude: 'Master (Bac+5)', experience: 3 },
+    { nom: 'Zahra', prenom: 'Fatima', email: 'fatima.zahra@email.com', telephone: '98765432', adresse: 'Sfax, Route de Teniour', dateNaissance: '1997-07-22', niveauEtude: 'Ingénieur (Bac+5)', experience: 2 },
+    { nom: 'Idrissi', prenom: 'Youssef', email: 'youssef.idrissi@email.com', telephone: '54321098', adresse: 'Ariana, El Ghazela', dateNaissance: '1993-11-08', niveauEtude: 'Licence (Bac+3)', experience: 5 },
+    { nom: 'Trabelsi', prenom: 'Sara', email: 'sara.trabelsi@email.com', telephone: '21098765', adresse: 'Bizerte, Centre-Ville', dateNaissance: '1998-01-30', niveauEtude: 'Bac+2', experience: 1 }
   ];
 
   const candidatsMap = {};
@@ -69,16 +69,16 @@ async function seedDemoData() {
 
   // ── Offres ───────────────────────────────────────────────────────
   const offresData = [
-    { entrepriseId: entreprisesMap['marie.dupont@techcorp.ma'], titre: 'Développeur Full Stack Angular/Node.js', description: 'Rejoignez notre équipe pour développer des applications web modernes avec Angular et Node.js. Vous participerez à la conception, au développement et au déploiement de solutions innovantes.', typeContrat: 'CDI', salaire: 15000, localisation: 'Casablanca', statut: 'ACTIVE', competences: 'Angular,Node.js,TypeScript,MongoDB', experienceDemandee: 2 },
-    { entrepriseId: entreprisesMap['marie.dupont@techcorp.ma'], titre: 'DevOps Engineer', description: 'Nous recherchons un ingénieur DevOps pour automatiser nos processus de déploiement et gérer notre infrastructure cloud AWS.', typeContrat: 'CDI', salaire: 18000, localisation: 'Casablanca', statut: 'ACTIVE', competences: 'Docker,Kubernetes,AWS,CI/CD,Jenkins', experienceDemandee: 3 },
-    { entrepriseId: entreprisesMap['hassan@innov-rh.ma'], titre: 'Consultant RH Junior', description: 'Intégrez notre cabinet de conseil RH et accompagnez nos clients dans la gestion de leurs talents et processus de recrutement.', typeContrat: 'CDD', salaire: 8000, localisation: 'Rabat', statut: 'ACTIVE', competences: 'Communication,Recrutement,Gestion RH', experienceDemandee: 0 },
-    { entrepriseId: entreprisesMap['hassan@innov-rh.ma'], titre: 'Chef de Projet Digital', description: 'Pilotez des projets de transformation digitale RH pour nos clients grands comptes.', typeContrat: 'CDI', salaire: 22000, localisation: 'Rabat', statut: 'ACTIVE', competences: 'Agile,Scrum,Jira,Management', experienceDemandee: 5 },
-    { entrepriseId: entreprisesMap['sophie@datawave.ma'], titre: 'Data Scientist', description: 'Analysez et modélisez des données complexes pour aider nos clients à prendre des décisions stratégiques basées sur l\'IA et le Machine Learning.', typeContrat: 'CDI', salaire: 20000, localisation: 'Tanger', statut: 'ACTIVE', competences: 'Python,TensorFlow,SQL,Machine Learning', experienceDemandee: 2 },
-    { entrepriseId: entreprisesMap['sophie@datawave.ma'], titre: 'Analyste Business Intelligence', description: 'Créez des dashboards et rapports interactifs pour transformer les données brutes en insights actionnables.', typeContrat: 'Stage', salaire: 4000, localisation: 'Tanger', statut: 'ACTIVE', competences: 'Power BI,SQL,Excel,Python', experienceDemandee: 0 },
-    { entrepriseId: entreprisesMap['karim@greenergy.ma'], titre: 'Ingénieur Énergie Solaire', description: 'Conception et dimensionnement de centrales solaires photovoltaïques pour des projets industriels et résidentiels.', typeContrat: 'CDI', salaire: 16000, localisation: 'Marrakech', statut: 'ACTIVE', competences: 'AutoCAD,PVsyst,Énergie Solaire', experienceDemandee: 3 },
-    { entrepriseId: entreprisesMap['karim@greenergy.ma'], titre: 'Technicien Maintenance', description: 'Assurer la maintenance préventive et corrective des installations solaires et éoliennes.', typeContrat: 'CDD', salaire: 7000, localisation: 'Marrakech', statut: 'ACTIVE', competences: 'Électricité,Maintenance,Sécurité', experienceDemandee: 1 },
-    { entrepriseId: entreprisesMap['marie.dupont@techcorp.ma'], titre: 'UX/UI Designer', description: 'Concevez des interfaces utilisateur modernes et ergonomiques en utilisant Figma et les principes du Human Centered Design.', typeContrat: 'CDI', salaire: 14000, localisation: 'Casablanca', statut: 'ACTIVE', competences: 'Figma,Adobe XD,Prototyping,UX Research', experienceDemandee: 2 },
-    { entrepriseId: entreprisesMap['sophie@datawave.ma'], titre: 'Développeur Python Backend', description: 'Développement d\'APIs RESTful et de microservices avec Python/Django pour notre plateforme data.', typeContrat: 'CDI', salaire: 16000, localisation: 'Tanger', statut: 'ACTIVE', competences: 'Python,Django,PostgreSQL,Docker,Redis', experienceDemandee: 3 }
+    { entrepriseId: entreprisesMap['marie.dupont@techcorp.tn'], titre: 'Développeur Full Stack Angular/Node.js', description: 'Rejoignez notre équipe pour développer des applications web modernes avec Angular et Node.js. Vous participerez à la conception, au développement et au déploiement de solutions innovantes.', typeContrat: 'CDI', salaire: 3500, localisation: 'Tunis', statut: 'ACTIVE', competences: 'Angular,Node.js,TypeScript,MongoDB', experienceDemandee: 2 },
+    { entrepriseId: entreprisesMap['marie.dupont@techcorp.tn'], titre: 'DevOps Engineer', description: 'Nous recherchons un ingénieur DevOps pour automatiser nos processus de déploiement et gérer notre infrastructure cloud AWS.', typeContrat: 'CDI', salaire: 4500, localisation: 'Tunis', statut: 'ACTIVE', competences: 'Docker,Kubernetes,AWS,CI/CD,Jenkins', experienceDemandee: 3 },
+    { entrepriseId: entreprisesMap['hassan@innov-rh.tn'], titre: 'Consultant RH Junior', description: 'Intégrez notre cabinet de conseil RH et accompagnez nos clients dans la gestion de leurs talents et processus de recrutement.', typeContrat: 'CDD', salaire: 1800, localisation: 'Sfax', statut: 'ACTIVE', competences: 'Communication,Recrutement,Gestion RH', experienceDemandee: 0 },
+    { entrepriseId: entreprisesMap['hassan@innov-rh.tn'], titre: 'Chef de Projet Digital', description: 'Pilotez des projets de transformation digitale RH pour nos clients grands comptes.', typeContrat: 'CDI', salaire: 4200, localisation: 'Sfax', statut: 'ACTIVE', competences: 'Agile,Scrum,Jira,Management', experienceDemandee: 5 },
+    { entrepriseId: entreprisesMap['sophie@datawave.tn'], titre: 'Data Scientist', description: 'Analysez et modélisez des données complexes pour aider nos clients à prendre des décisions stratégiques basées sur l\'IA et le Machine Learning.', typeContrat: 'CDI', salaire: 4000, localisation: 'Ariana', statut: 'ACTIVE', competences: 'Python,TensorFlow,SQL,Machine Learning', experienceDemandee: 2 },
+    { entrepriseId: entreprisesMap['sophie@datawave.tn'], titre: 'Analyste Business Intelligence', description: 'Créez des dashboards et rapports interactifs pour transformer les données brutes en insights actionnables.', typeContrat: 'Stage', salaire: 900, localisation: 'Ariana', statut: 'ACTIVE', competences: 'Power BI,SQL,Excel,Python', experienceDemandee: 0 },
+    { entrepriseId: entreprisesMap['karim@greenergy.tn'], titre: 'Ingénieur Énergie Solaire', description: 'Conception et dimensionnement de centrales solaires photovoltaïques pour des projets industriels et résidentiels.', typeContrat: 'CDI', salaire: 3200, localisation: 'Sousse', statut: 'ACTIVE', competences: 'AutoCAD,PVsyst,Énergie Solaire', experienceDemandee: 3 },
+    { entrepriseId: entreprisesMap['karim@greenergy.tn'], titre: 'Technicien Maintenance', description: 'Assurer la maintenance préventive et corrective des installations solaires et éoliennes.', typeContrat: 'CDD', salaire: 1500, localisation: 'Sousse', statut: 'ACTIVE', competences: 'Électricité,Maintenance,Sécurité', experienceDemandee: 1 },
+    { entrepriseId: entreprisesMap['marie.dupont@techcorp.tn'], titre: 'UX/UI Designer', description: 'Concevez des interfaces utilisateur modernes et ergonomiques en utilisant Figma et les principes du Human Centered Design.', typeContrat: 'CDI', salaire: 2800, localisation: 'Tunis', statut: 'ACTIVE', competences: 'Figma,Adobe XD,Prototyping,UX Research', experienceDemandee: 2 },
+    { entrepriseId: entreprisesMap['sophie@datawave.tn'], titre: 'Développeur Python Backend', description: 'Développement d\'APIs RESTful et de microservices avec Python/Django pour notre plateforme data.', typeContrat: 'CDI', salaire: 3200, localisation: 'Ariana', statut: 'ACTIVE', competences: 'Python,Django,PostgreSQL,Docker,Redis', experienceDemandee: 3 }
   ];
 
   const createdOffres = [];
@@ -91,7 +91,7 @@ async function seedDemoData() {
 
   // ── Candidatures ─────────────────────────────────────────────────
   if (createdOffres.length >= 7) {
-    const ahmedId = candidatsMap['ahmed.benali@email.com'];
+    const ahmedId = candidatsMap['ahmed.gharbi@email.com'];
     const fatimaId = candidatsMap['fatima.zahra@email.com'];
     const youssefId = candidatsMap['youssef.idrissi@email.com'];
 

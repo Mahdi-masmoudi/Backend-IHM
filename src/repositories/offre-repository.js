@@ -88,16 +88,20 @@ async function listOffers({ q, typeContrat, localisation, statut, salaireMin, sa
     entrepriseMap[e.userId.toString()] = e;
   }
 
-  const items = offres.map(o => {
-    const e = entrepriseMap[o.entrepriseId.toString()] || {};
-    return {
-      ...o,
-      idOffre: o._id,
-      nomEntreprise: e.nomEntreprise || '',
-      secteurActivite: e.secteurActivite || '',
-      logo: e.logo || ''
-    };
-  });
+  const items = await Promise.all(
+    offres.map(async o => {
+      const e = entrepriseMap[o.entrepriseId.toString()] || {};
+      const candidaturesCount = await Candidature.countDocuments({ offreId: o._id });
+      return {
+        ...o,
+        idOffre: o._id,
+        nomEntreprise: e.nomEntreprise || '',
+        secteurActivite: e.secteurActivite || '',
+        logo: e.logo || '',
+        candidaturesCount
+      };
+    })
+  );
 
   return { total, items };
 }

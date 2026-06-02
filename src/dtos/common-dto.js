@@ -1,7 +1,7 @@
 const { z } = require('zod');
 
 const idParamSchema = z.object({
-  id: z.coerce.number().int().positive()
+  id: z.string().regex(/^[0-9a-fA-F]{24}$/, 'Invalid Mongoose ObjectId')
 });
 
 module.exports = { idParamSchema };

@@ -8,7 +8,7 @@ async function getProfile(userId) {
   }
 
   return {
-    userId: entreprise.user_id,
+    userId: entreprise.userId,
     nomEntreprise: entreprise.nomEntreprise,
     adresseEntreprise: entreprise.adresseEntreprise,
     secteurActivite: entreprise.secteurActivite,

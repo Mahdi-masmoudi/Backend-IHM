@@ -11,6 +11,10 @@ async function list(req, res, next) {
     const { page, pageSize } = parsePagination(req.query);
     const mine = req.query.mine === 'true';
 
+    if (mine && !req.user) {
+      return res.status(401).json({ message: 'Authentication required for user-specific offers' });
+    }
+
     const result = await offreService.listOffers({
       q: req.query.q || null,
       typeContrat: req.query.typeContrat || null,

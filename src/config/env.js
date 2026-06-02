@@ -17,7 +17,7 @@ ensureDir(uploadDir);
 ensureDir(cvUploadDir);
 
 const env = {
-  port: Number.parseInt(process.env.PORT || '4001', 10),
+  port: Number.parseInt(process.env.PORT || '4000', 10),
   jwtSecret: process.env.JWT_SECRET || 'change_me',
   jwtExpiresIn: process.env.JWT_EXPIRES_IN || '1d',
   mongoUri: process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/recrutement',
