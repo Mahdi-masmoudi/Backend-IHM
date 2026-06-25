@@ -6,7 +6,8 @@ const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true, lowercase: true, trim: true },
   motDePasse: { type: String, required: true },
   telephone: { type: String, default: '' },
-  role: { type: String, required: true, enum: ['SUPER_ADMIN', 'CANDIDAT', 'ENTREPRISE'] }
+  role: { type: String, required: true, enum: ['SUPER_ADMIN', 'CANDIDAT', 'ENTREPRISE'] },
+  isActive: { type: Boolean, default: true }
 }, { timestamps: true });
 
 userSchema.index({ role: 1 });

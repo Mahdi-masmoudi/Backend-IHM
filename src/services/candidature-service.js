@@ -1,8 +1,11 @@
+const path = require('path');
 const { AppError } = require('../utils/errors');
 const offreRepository = require('../repositories/offre-repository');
 const candidatureRepository = require('../repositories/candidature-repository');
 const cvRepository = require('../repositories/cv-repository');
 const lettreRepository = require('../repositories/lettre-repository');
+const candidatRepository = require('../repositories/candidat-repository');
+const { calculateScore } = require('../utils/scoring');
 
 async function applyCandidature({ candidatId, offreId, cvId, lettreId, commentaire }) {
   const offre = await offreRepository.findById(offreId);
@@ -15,8 +18,9 @@ async function applyCandidature({ candidatId, offreId, cvId, lettreId, commentai
     throw new AppError(409, 'Candidature already exists for this offer');
   }
 
+  let cv = null;
   if (cvId) {
-    const cv = await cvRepository.findById(cvId);
+    cv = await cvRepository.findById(cvId);
     if (!cv || String(cv.candidatId) !== String(candidatId)) {
       throw new AppError(400, 'CV not found for this candidat');
     }
@@ -29,13 +33,18 @@ async function applyCandidature({ candidatId, offreId, cvId, lettreId, commentai
     }
   }
 
+  const candidat = await candidatRepository.getByUserId(candidatId);
+  const score = candidat ? calculateScore(candidat, offre) : 0;
+
   const result = await candidatureRepository.create({
     candidatId,
     offreId,
     cvId,
     lettreId,
-    commentaire
+    commentaire,
+    score
   });
+
 
   return {
     idCandidature: result._id,
@@ -45,9 +54,11 @@ async function applyCandidature({ candidatId, offreId, cvId, lettreId, commentai
     lettreId,
     datePostulation: result.datePostulation,
     statut: 'EN_ATTENTE',
-    commentaire: commentaire || null
+    commentaire: commentaire || null,
+    score
   };
 }
+
 
 async function listByOffre({ entrepriseId, offreId }) {
   const offre = await offreRepository.findById(offreId);

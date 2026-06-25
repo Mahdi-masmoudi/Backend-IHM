@@ -147,13 +147,13 @@ async function getCandidatStats(userId) {
   if (totalCvs > 0) completion += 25; 
   else suggestions.push({ field: 'cv', message: 'Uploadez votre CV pour être visible des recruteurs (+25% visibilité)', points: 25 });
 
-  // 10. Compétences (min 3) (10%)
-  if (candidat?.competences && candidat.competences.length >= 3) completion += 10; 
-  else suggestions.push({ field: 'competences', message: 'Ajoutez au moins 3 compétences clés (+10% visibilité)', points: 10 });
+  // 10. Compétences (min 3) (5%)
+  if (candidat?.competences && candidat.competences.length >= 3) completion += 5; 
+  else suggestions.push({ field: 'competences', message: 'Ajoutez au moins 3 compétences clés (+5% visibilité)', points: 5 });
 
-  // 11. Langues (min 1) (10%)
-  if (candidat?.langues && candidat.langues.length >= 1) completion += 10; 
-  else suggestions.push({ field: 'langues', message: 'Renseignez au moins 1 langue parlée (+10% visibilité)', points: 10 });
+  // 11. Langues (min 1) (5%)
+  if (candidat?.langues && candidat.langues.length >= 1) completion += 5; 
+  else suggestions.push({ field: 'langues', message: 'Renseignez au moins 1 langue parlée (+5% visibilité)', points: 5 });
 
   completion = Math.min(completion, 100);
 

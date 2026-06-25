@@ -13,9 +13,15 @@ router.use(authenticate, requireRole(Roles.SUPER_ADMIN));
 
 router.get('/users', adminController.listUsers);
 router.delete('/users/:id', validateParams(idParamSchema), adminController.deleteUser);
+router.patch('/users/:id/status', validateParams(idParamSchema), adminController.toggleUserStatus);
+
 router.get('/offres', adminController.listOffres);
 router.delete('/offres/:id', validateParams(idParamSchema), adminController.deleteOffre);
+
 router.get('/candidats', adminController.listCandidats);
+router.get('/candidats/:id/candidatures', validateParams(idParamSchema), adminController.getCandidatApplications);
+
 router.get('/entreprises', adminController.listEntreprises);
+router.get('/entreprises/:id/offres', validateParams(idParamSchema), adminController.getEntrepriseOffres);
 
 module.exports = router;

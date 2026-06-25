@@ -1,4 +1,4 @@
-const { app } = require('./app');
+const app = require('./app');
 const { env } = require('./config/env');
 const { connectDb } = require('./database/db');
 const { seedSuperAdmin, seedDemoData } = require('./database/seed');

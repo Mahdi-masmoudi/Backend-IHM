@@ -16,4 +16,5 @@ router.get('/offre/:id', authenticate, requireRole(Roles.ENTREPRISE), validatePa
 router.put('/:id/accepter', authenticate, requireRole(Roles.ENTREPRISE), validateParams(idParamSchema), candidatureController.accepter);
 router.put('/:id/rejeter', authenticate, requireRole(Roles.ENTREPRISE), validateParams(idParamSchema), candidatureController.rejeter);
 
+
 module.exports = router;

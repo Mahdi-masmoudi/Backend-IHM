@@ -15,6 +15,15 @@ async function deleteUser(id) {
   await User.findByIdAndDelete(id);
 }
 
+async function toggleUserStatus(id) {
+  const User = require('../models/User');
+  const user = await User.findById(id);
+  if (!user) throw new Error('Utilisateur non trouvé');
+  user.isActive = !user.isActive;
+  await user.save();
+  return user;
+}
+
 async function listOffres() {
   const result = await offreRepository.listOffers({ page: 1, pageSize: 200, q: null, typeContrat: null, localisation: null, statut: null, entrepriseId: null });
   return result.items;
@@ -42,6 +51,28 @@ async function listCandidats() {
       email: u.email || '',
       telephone: u.telephone || ''
     };
+  });
+}
+
+async function getCandidatApplications(userId) {
+  const Candidature = require('../models/Candidature');
+  const candidatures = await Candidature.find({ candidatId: userId })
+    .populate({
+      path: 'offreId',
+      select: 'titre localisation statut entrepriseId',
+      populate: {
+        path: 'entrepriseId',
+        select: 'nom'
+      }
+    })
+    .sort({ datePostulation: -1 })
+    .lean();
+
+  return candidatures.map(app => {
+    if (app.offreId && app.offreId.entrepriseId) {
+      app.offreId.nomEntreprise = app.offreId.entrepriseId.nom;
+    }
+    return app;
   });
 }
 
@@ -74,4 +105,10 @@ async function deleteOffre(id) {
   await offreRepository.deleteOffre(id);
 }
 
-module.exports = { listUsers, deleteUser, listOffres, deleteOffre, listCandidats, listEntreprises };
+async function getEntrepriseOffres(userId) {
+  const Offre = require('../models/Offre');
+  return Offre.find({ entrepriseId: userId }).sort({ datePublication: -1 }).lean();
+}
+
+module.exports = { listUsers, deleteUser, toggleUserStatus, listOffres, deleteOffre, listCandidats, getCandidatApplications, listEntreprises, getEntrepriseOffres };
+

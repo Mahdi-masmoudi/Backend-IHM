@@ -7,7 +7,8 @@ const candidatureSchema = new mongoose.Schema({
   lettreId: { type: mongoose.Schema.Types.ObjectId, ref: 'LettreMotivation', default: null },
   datePostulation: { type: Date, default: Date.now },
   statut: { type: String, default: 'EN_ATTENTE', enum: ['EN_ATTENTE', 'ACCEPTEE', 'REJETEE'] },
-  commentaire: { type: String, default: '' }
+  commentaire: { type: String, default: '' },
+  score: { type: Number, default: 0 }
 }, { timestamps: true });
 
 // Prevent double candidature

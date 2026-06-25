@@ -2,13 +2,15 @@ const Candidature = require('../models/Candidature');
 const Offre = require('../models/Offre');
 const User = require('../models/User');
 const Entreprise = require('../models/Entreprise');
+const { calculateScore } = require('../utils/scoring');
 
-async function create({ candidatId, offreId, cvId, lettreId, commentaire }) {
+async function create({ candidatId, offreId, cvId, lettreId, commentaire, score }) {
   return Candidature.create({
     candidatId, offreId,
     cvId: cvId || null,
     lettreId: lettreId || null,
-    commentaire: commentaire || ''
+    commentaire: commentaire || '',
+    score: score || 0
   });
 }
 
@@ -34,9 +36,22 @@ async function listByCandidat(candidatId) {
   const entrepriseMap = {};
   for (const e of entreprises) entrepriseMap[e.userId.toString()] = e;
 
+  const cvIds = candidatures.map(c => c.cvId).filter(Boolean);
+  const cvs = await require('../models/Cv').find({ _id: { $in: cvIds } }).lean();
+  const cvMap = {};
+  for (const cv of cvs) cvMap[cv._id.toString()] = cv;
+
+  const lettreIds = candidatures.map(c => c.lettreId).filter(Boolean);
+  const lettres = await require('../models/LettreMotivation').find({ _id: { $in: lettreIds } }).lean();
+  const lettreMap = {};
+  for (const l of lettres) lettreMap[l._id.toString()] = l;
+
   return candidatures.map(c => {
     const o = offreMap[c.offreId.toString()] || {};
     const e = entrepriseMap[o.entrepriseId?.toString()] || {};
+    const cvObj = c.cvId ? cvMap[c.cvId.toString()] : null;
+    const lObj = c.lettreId ? lettreMap[c.lettreId.toString()] : null;
+
     return {
       ...c,
       idCandidature: c._id,
@@ -45,13 +60,16 @@ async function listByCandidat(candidatId) {
       localisation: o.localisation || '',
       salaire: o.salaire || 0,
       nomEntreprise: e.nomEntreprise || '',
-      logo: e.logo || ''
+      logo: e.logo || '',
+      cvNomFichier: cvObj ? cvObj.nomFichier : '',
+      lettreContenu: lObj ? lObj.contenu : ''
     };
   });
 }
 
 async function listByOffre(offreId) {
   const candidatures = await Candidature.find({ offreId }).sort({ datePostulation: -1 }).lean();
+  const offre = await Offre.findById(offreId).lean();
   const userIds = candidatures.map(c => c.candidatId);
   
   const users = await User.find({ _id: { $in: userIds } }).select('-motDePasse').lean();
@@ -78,9 +96,12 @@ async function listByOffre(offreId) {
     const cvObj = c.cvId ? cvMap[c.cvId.toString()] : null;
     const lObj = c.lettreId ? lettreMap[c.lettreId.toString()] : null;
 
+    const finalScore = (c.score && c.score > 0) ? c.score : (offre && candProfile ? calculateScore(candProfile, offre) : 0);
+
     return {
       ...c,
       idCandidature: c._id,
+      score: finalScore,
       nom: u.nom || '',
       prenom: u.prenom || '',
       email: u.email || '',
@@ -99,7 +120,7 @@ async function listByOffre(offreId) {
 
 async function listByEntreprise(entrepriseId) {
   // Find all offres belonging to this entreprise
-  const offres = await Offre.find({ entrepriseId }).select('_id titre typeContrat localisation salaire').lean();
+  const offres = await Offre.find({ entrepriseId }).select('_id titre typeContrat localisation salaire competences experienceDemandee').lean();
   const offreIds = offres.map(o => o._id);
   if (offreIds.length === 0) return [];
 
@@ -135,9 +156,12 @@ async function listByEntreprise(entrepriseId) {
     const cvObj = c.cvId ? cvMap[c.cvId.toString()] : null;
     const lObj = c.lettreId ? lettreMap[c.lettreId.toString()] : null;
 
+    const finalScore = (c.score && c.score > 0) ? c.score : calculateScore(candProfile, o);
+
     return {
       ...c,
       idCandidature: c._id,
+      score: finalScore,
       nom: u.nom || '',
       prenom: u.prenom || '',
       email: u.email || '',

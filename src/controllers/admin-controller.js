@@ -18,6 +18,15 @@ async function deleteUser(req, res, next) {
   }
 }
 
+async function toggleUserStatus(req, res, next) {
+  try {
+    const user = await adminService.toggleUserStatus(req.params.id);
+    res.json({ message: 'Statut mis à jour', isActive: user.isActive });
+  } catch (error) {
+    next(error);
+  }
+}
+
 async function listOffres(req, res, next) {
   try {
     const offres = await adminService.listOffres();
@@ -54,4 +63,22 @@ async function deleteOffre(req, res, next) {
   }
 }
 
-module.exports = { listUsers, deleteUser, listOffres, deleteOffre, listCandidats, listEntreprises };
+async function getCandidatApplications(req, res, next) {
+  try {
+    const candidatures = await adminService.getCandidatApplications(req.params.id);
+    res.json(candidatures);
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function getEntrepriseOffres(req, res, next) {
+  try {
+    const offres = await adminService.getEntrepriseOffres(req.params.id);
+    res.json(offres);
+  } catch (error) {
+    next(error);
+  }
+}
+
+module.exports = { listUsers, deleteUser, toggleUserStatus, listOffres, deleteOffre, listCandidats, getCandidatApplications, listEntreprises, getEntrepriseOffres };

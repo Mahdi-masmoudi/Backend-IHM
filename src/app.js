@@ -42,4 +42,4 @@ app.use('/stats', statsRoutes);
 
 app.use(errorHandler);
 
-module.exports = { app };
+module.exports = app;
