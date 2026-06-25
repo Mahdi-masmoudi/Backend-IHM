@@ -10,7 +10,10 @@ function ensureDir(dirPath) {
   }
 }
 
-const uploadDir = path.resolve(process.cwd(), process.env.UPLOAD_DIR || './uploads');
+const isVercel = process.env.VERCEL === '1';
+const uploadDir = isVercel 
+  ? path.join('/tmp', 'uploads')
+  : path.resolve(process.cwd(), process.env.UPLOAD_DIR || './uploads');
 const cvUploadDir = path.join(uploadDir, 'cv');
 
 ensureDir(uploadDir);
